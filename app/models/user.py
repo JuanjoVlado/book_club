@@ -3,10 +3,11 @@ from sqlmodel import SQLModel, Field
 from pydantic import EmailStr
 from datetime import date, datetime
 
+
 class UserStatus(StrEnum):
-    ACTIVE="active"
-    INACTIVE="inactive"
-    BANNED="banned"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    BANNED = "banned"
 
 
 class User(SQLModel, table=True):
@@ -19,8 +20,7 @@ class User(SQLModel, table=True):
     created_date: datetime = Field(default_factory=lambda: datetime.now())
     modified_date: datetime = Field(
         default_factory=lambda: datetime.now(),
-        sa_column_kwargs={"onupdate": datetime.now}
+        sa_column_kwargs={"onupdate": datetime.now},
     )
     # clubs: BookClub
     # books: Book
-

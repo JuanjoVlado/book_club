@@ -1,10 +1,12 @@
 from sqlmodel import SQLModel, Field
 from enum import Enum
 
+
 class BookStatus(str, Enum):
-    READ="read"
-    READING="reading"
-    TO_READ="to_read"
+    READ = "read"
+    READING = "reading"
+    TO_READ = "to_read"
+
 
 class Book(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)

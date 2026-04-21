@@ -19,10 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
-    return {"message":"¡Hola, Mundo!"}
+    return {"message": "¡Hola, Mundo!"}
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
-    return {"status":"healthy"}
+    return {"status": "healthy"}

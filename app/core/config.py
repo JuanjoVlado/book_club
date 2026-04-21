@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class DatabaseSettings(BaseSettings):
     db_host: str
     db_port: int
@@ -14,7 +15,8 @@ class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore"  # Ignore additional variables in .env
+        extra="ignore",  # Ignore additional variables in .env
     )
+
 
 database_settings = DatabaseSettings()

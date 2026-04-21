@@ -41,3 +41,8 @@ asyncio_mode = "auto"
 [tool.coverage.run]
 source = ["app"]
 omit = ["tests/*", "migrations/*"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.11",
+]
