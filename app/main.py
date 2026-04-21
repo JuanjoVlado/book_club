@@ -1,10 +1,12 @@
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.auth import auth_router
+
 app = FastAPI()
 
 # TODO: add routes
-# app.include_router()
+app.include_router(auth_router, prefix="/auth")
 
 origins = [
     "http://localhost",
