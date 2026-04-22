@@ -1,6 +1,6 @@
 from app.models import user
 from sqlmodel import SQLModel
-from app.core.config import database_settings
+from app.core.config import settings
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -28,7 +28,7 @@ target_metadata = SQLModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-config.set_main_option("sqlalchemy.url", database_settings.db_connection_str)
+config.set_main_option("sqlalchemy.url", settings.db_connection_str)
 
 
 def run_migrations_offline() -> None:
