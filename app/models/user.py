@@ -9,15 +9,16 @@ class UserStatus(StrEnum):
     INACTIVE = "inactive"
     BANNED = "banned"
 
-
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
-    email: EmailStr = Field(unique=True)
-    hashed_password: str
+class UserBase(SQLModel):
+    name:str
+    email: EmailStr
     date_of_birth: date
     status: UserStatus = UserStatus.ACTIVE
     created_date: datetime = Field(default_factory=lambda: datetime.now())
+
+class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    hashed_password: str = Field(max_length=128)
     modified_date: datetime = Field(
         default_factory=lambda: datetime.now(),
         sa_column_kwargs={"onupdate": datetime.now},

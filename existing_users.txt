@@ -1,0 +1,5 @@
+ id |  name  |      email       |                       hashed_password                        | date_of_birth | status |        created_date        |       modified_date        
+----+--------+------------------+--------------------------------------------------------------+---------------+--------+----------------------------+----------------------------
+  1 | string | user@example.com | $2b$12$KP6rxqQreyFl9kDdeXw/MOHAo6UsUysXroFhzAkiugNP/23ao3e0S | 2026-04-22    | ACTIVE | 2026-04-22 19:52:40.773045 | 2026-04-22 19:52:40.773064
+(1 row)
+

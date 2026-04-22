@@ -1,15 +1,20 @@
+import hashlib
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from app.core.config import settings
 from jose import jwt
+import bcrypt
 
-crypt_context = CryptContext(schemes=["bcrypt"])
+
+crypt_context = CryptContext(schemes=["bcrypt"], truncate_error=False)
 
 def hash_password(plain_password: str) -> str:
-    return crypt_context.hash(plain_password)
+    sha = hashlib.sha256(plain_password.encode()).hexdigest()
+    return bcrypt.hashpw(sha.encode(), bcrypt.gensalt()).decode()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return crypt_context.verify(plain_password, hashed_password)
+    sha = hashlib.sha256(plain_password.encode()).hexdigest()
+    return bcrypt.checkpw(sha.encode(), hashed_password.encode())
 
 def create_access_token(email: str) -> str:
     exp_timestamp = datetime.now() + timedelta(days=5)
