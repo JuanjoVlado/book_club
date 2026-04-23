@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
+
 from app.models.user import User
 from app.schemas.user import UserRegister, UserLogin, UserAuthentication
 from app.db.session import SessionDep
-from app.core.security import hash_password, create_access_token, verify_password
+from app.core.security import hash_password, create_access_token, verify_password, get_current_user
 
 auth_router = APIRouter()
 
@@ -40,13 +42,13 @@ async def register_user(user_data: UserRegister, session: SessionDep):
 @auth_router.post("/login",
              tags=['auth'],
              status_code=status.HTTP_200_OK)
-async def user_login(user_login: UserLogin, session: SessionDep):
-    statement = select(User).where(User.email == user_login.email)
+async def user_login(session: SessionDep, user_login: OAuth2PasswordRequestForm = Depends()):
+    statement = select(User).where(User.email == user_login.username)
     existing = session.exec(statement).first()
 
     if existing:
         if verify_password(user_login.password, existing.hashed_password):
-            access_token = create_access_token(user_login.email)
+            access_token = create_access_token(user_login.username)
             return UserAuthentication(access_token=access_token, token_type="bearer")
     
     raise HTTPException(
@@ -57,8 +59,9 @@ async def user_login(user_login: UserLogin, session: SessionDep):
 
 @auth_router.post("/logout",
              tags=['auth'],
-             status_code=status.HTTP_200_OK)
-             
-async def user_logout():
+             status_code=status.HTTP_200_OK
+)             
+async def user_logout(access_token: str = Depends(get_current_user)):
     return {"message": "logout"}
+    
 
