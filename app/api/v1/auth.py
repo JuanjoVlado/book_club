@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 from app.models.user import User
-from app.schemas.user import UserAuthentication, UserRegister, UserLogin
+from app.schemas.user import UserRegister, UserLogin, UserAuthentication
 from app.db.session import SessionDep
-from app.core.security import hash_password, create_access_token
+from app.core.security import hash_password, create_access_token, verify_password
 
 auth_router = APIRouter()
 
@@ -39,10 +39,21 @@ async def register_user(user_data: UserRegister, session: SessionDep):
 
 @auth_router.post("/login",
              tags=['auth'],
-             response_model=UserAuthentication,
              status_code=status.HTTP_200_OK)
 async def user_login(user_login: UserLogin, session: SessionDep):
-    return {"message": "login"}
+    statement = select(User).where(User.email == user_login.email)
+    existing = session.exec(statement).first()
+
+    if existing:
+        if verify_password(user_login.password, existing.hashed_password):
+            access_token = create_access_token(user_login.email)
+            return UserAuthentication(access_token=access_token, token_type="bearer")
+    
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="incorrect credentials"
+    )
+
 
 @auth_router.post("/logout",
              tags=['auth'],
