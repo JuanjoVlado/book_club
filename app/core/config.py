@@ -17,10 +17,20 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_DBNAME: str
 
+    DEV_DB_HOST: str
+    DEV_DB_PORT: int
+    DEV_DB_USERNAME: str
+    DEV_DB_PASSWORD: str
+    DEV_DB_DBNAME: str
+
     @property
     def db_connection_str(self):
         return f"postgresql://{self.DB_USERNAME}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_DBNAME}"
-
+        
+    @property
+    def dev_db_connection_str(self):
+        return f"postgresql://{self.DEV_DB_USERNAME}:{self.DEV_DB_PASSWORD}@{self.DEV_DB_HOST}:{self.DEV_DB_PORT}/{self.DEV_DB_DBNAME}"
+    
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
