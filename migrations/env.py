@@ -1,11 +1,9 @@
-from app.models import user
+from app.models import user, book, club_book, club_user
 from sqlmodel import SQLModel
 from app.core.config import settings
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
 
 # this is the Alembic Config object, which provides
