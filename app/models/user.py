@@ -3,6 +3,9 @@ from sqlmodel import SQLModel, Field
 from pydantic import EmailStr
 from datetime import date, datetime
 
+class UserRole(StrEnum):
+    USER = "user"
+    ADMIN = "admin"
 
 class UserStatus(StrEnum):
     ACTIVE = "active"
@@ -15,6 +18,7 @@ class UserBase(SQLModel):
     date_of_birth: date
     status: UserStatus = UserStatus.ACTIVE
     created_date: datetime = Field(default_factory=lambda: datetime.now())
+    role: UserRole = UserRole.USER
 
 class User(UserBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
