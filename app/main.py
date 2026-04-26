@@ -1,12 +1,19 @@
-from fastapi import FastAPI, status
+import traceback
+
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1.auth import auth_router
+from app.api.v1.books import book_router
+from app.api.v1.club import club_router
 
 app = FastAPI()
 
 # TODO: add routes
 app.include_router(auth_router, prefix="/auth")
+app.include_router(book_router, prefix="/books")
+app.include_router(club_router, prefix="/clubs")
 
 origins = [
     "http://localhost",
@@ -21,6 +28,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "traceback": traceback.format_exc()}
+    )
 
 @app.get("/")
 async def root():
