@@ -7,6 +7,7 @@ from sqlmodel import select
 from app.core.config import settings
 from jose import JWTError, jwt
 from app.db.session import SessionDep
+from app.models.club import BookClub
 from app.models.user import User, UserRole
 from fastapi.security import OAuth2PasswordBearer
 
@@ -58,4 +59,21 @@ def require_admin(session: SessionDep, current_user: User = Depends(get_current_
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Current user does not have the permissions necessary to create or udpate books."
+    )
+
+def require_club_admin(session: SessionDep, club_id: int, current_user: User = Depends(get_current_user)):
+    club = session.get(BookClub, club_id)
+
+    if club:
+        if current_user.role == UserRole.ADMIN or  current_user.id == club.admin_id:
+            return {"user": current_user, "club": club}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have permission to perform this action."
+            )
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Club not found"
     )

@@ -1,6 +1,11 @@
 from enum import StrEnum
 from sqlmodel import Field, SQLModel
-from app.models.club import ClubRole
+
+
+class ClubRole(StrEnum):
+    USER = "user"
+    ADMIN = "administrator"
+    MOD = "moderator" 
 
 class ClubUserStatus(StrEnum):
     ACTIVE = "active"
