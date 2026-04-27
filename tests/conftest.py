@@ -1,21 +1,25 @@
 import json
-
-from fastapi import Depends
 import pytest
 
+from pathlib import Path
+from fastapi import Depends
+from fastapi.testclient import TestClient
 from datetime import date
 from sqlmodel import create_engine, Session, SQLModel, select
-from app.core.config import settings
-from fastapi.testclient import TestClient
+
 from app.main import app
 from app.db.session import SessionDep, get_db_session
+from app.core.config import settings
+from app.core.security import get_current_user
 from app.models.book import Book
+from app.models.club import BookClub
 from app.models.user import User, UserRole
 from app.schemas.book import BookCreate
+from app.schemas.club import ClubCreate
 from app.schemas.user import UserRegister, UserUpdate
-from app.core.security import get_current_user
 
 engine = create_engine(settings.dev_db_connection_str)
+test_entities_path = Path(__file__).parent / "test_entities_to_create.json"
 
 @pytest.fixture
 def test_client():
@@ -48,6 +52,21 @@ def registered_user(test_client):
         yield {"user": user, "access_token": access_token}
 
 @pytest.fixture
+def register_regular_user(test_client):
+    user = UserRegister(
+        email="regular_user@testing.com",
+        password="TesT_regular_P@ssworD",
+        name="Regular User",
+        date_of_birth=date(1991, 8, 12)
+    )
+
+    response = test_client.post("/auth/register", json=user.model_dump(mode="json"))
+
+    if response.status_code == 201:
+        access_token = response.json()["access_token"]
+        yield {"user": user, "access_token": access_token}
+
+@pytest.fixture
 def admin_user(test_client, registered_user):
     user = registered_user["user"]
     with Session(engine) as session:
@@ -64,9 +83,9 @@ def admin_user(test_client, registered_user):
 def books_created(test_client, admin_user):
     books = []
 
-    with open("/home/juanjo/proyects/BookClubMS/backend/test_books_to_create.json", "r") as f:
+    with open(test_entities_path, "r") as f:
         data = json.load(f)
-        for book_dict in data:
+        for book_dict in data["books"]:
             book = BookCreate(
                 title=book_dict["title"],
                 author=book_dict["author"],
@@ -89,3 +108,27 @@ def books_created(test_client, admin_user):
             books.append(response.json())
     
     yield books
+
+@pytest.fixture
+def create_clubs(test_client, admin_user):
+    clubs = []
+
+    with open(test_entities_path, "r") as f:
+        data = json.load(f)
+        for book_dict in data["clubs"]:
+            club = ClubCreate(**book_dict)
+            
+            response = test_client.post(
+                "/clubs/",
+                json=club.model_dump(mode="json"),
+                headers={"Authorization": f"Bearer {admin_user["access_token"]}"}
+            )
+
+            if response.status_code != 201:
+                print(f"Unable to create {club.name} for testig. Skipped")
+                continue
+            
+            clubs.append(response.json())
+    
+    yield {"clubs": clubs, "access_token": admin_user["access_token"]}
+            
