@@ -36,7 +36,17 @@ def create_club(
     session: SessionDep,
     user: User = Depends(get_current_user),
 ):
+    statement = select(BookClub).where(BookClub.name == club_data.name)
+    db_club = session.exec(statement).first()
+
+    if db_club:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"There is a Club named {club_data.name} already. Choose a different name for your club."
+        )
+
     new_club = BookClub(**club_data.model_dump(), admin_id=user.id)
+
 
     session.add(new_club)
     session.commit()
