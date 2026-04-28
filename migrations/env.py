@@ -1,4 +1,4 @@
-from app.models import user, book, club_book, club_user
+from app.models import user, book ,club_book, club_user, club, user_book
 from sqlmodel import SQLModel
 from app.core.config import settings
 from logging.config import fileConfig

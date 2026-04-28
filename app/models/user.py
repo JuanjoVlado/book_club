@@ -1,7 +1,11 @@
 from enum import StrEnum
-from sqlmodel import SQLModel, Field
+from typing import List
+from sqlmodel import Relationship, SQLModel, Field
 from pydantic import EmailStr
 from datetime import date, datetime
+
+from app.models.user_book import UserBook
+
 
 class UserRole(StrEnum):
     USER = "user"
@@ -27,5 +31,5 @@ class User(UserBase, table=True):
         default_factory=lambda: datetime.now(),
         sa_column_kwargs={"onupdate": datetime.now},
     )
-    # clubs: BookClub
-    # books: Book
+    # clubs: Book   Club
+    books: List["UserBook"] = Relationship()
