@@ -6,7 +6,7 @@
       "editorial": "Random House Publishing Group",
       "description": "Reflexión contra la pseudociencia y defensa de los beneficios históricos de la ciencia: vacunas, antibióticos, aviación, entre otros.",
       "isbn": "978-8416771486",
-      "pages": 498,
+      "page_count": 498,
       "genre": ["science", "essays"]
     },
     {
@@ -15,7 +15,7 @@
       "editorial": "Debate",
       "description": "Recorrido por la historia de la humanidad desde el surgimiento del Homo sapiens hasta la era moderna, analizando cómo la biología, la cultura y las ficciones colectivas han dado forma a las civilizaciones.",
       "isbn": "978-8499924212",
-      "pages": 496,
+      "page_count": 496,
       "genre": ["history", "anthropology"]
     },
     {
@@ -24,7 +24,7 @@
       "editorial": "Planeta",
       "description": "Exploración del universo conocido a través de la astronomía, la física y la historia de la ciencia, acompañada de reflexiones sobre el lugar de la humanidad en el cosmos.",
       "isbn": "978-8408009436",
-      "pages": 365,
+      "page_count": 365,
       "genre": ["science", "astronomy"]
     },
     {
@@ -33,7 +33,7 @@
       "editorial": "Salvat",
       "description": "Reinterpretación de la evolución desde la perspectiva del gen como unidad de selección natural, introduciendo conceptos como el 'gen egoísta' y el 'meme' como unidad de transmisión cultural.",
       "isbn": "978-8434562752",
-      "pages": 360,
+      "page_count": 360,
       "genre": ["science", "biology"]
     },
     {
@@ -42,7 +42,7 @@
       "editorial": "Crítica",
       "description": "Introducción a los grandes problemas de la física y la cosmología —el Big Bang, los agujeros negros, el tiempo y la naturaleza del universo— escrita para el público general.",
       "isbn": "978-8498921472",
-      "pages": 212,
+      "page_count": 212,
       "genre": ["science", "physics"]
     }
   ],
