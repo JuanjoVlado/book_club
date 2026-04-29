@@ -32,4 +32,4 @@ class User(UserBase, table=True):
         sa_column_kwargs={"onupdate": datetime.now},
     )
     # clubs: Book   Club
-    books: List["UserBook"] = Relationship()
+    books: List["UserBook"] = Relationship(back_populates="user")

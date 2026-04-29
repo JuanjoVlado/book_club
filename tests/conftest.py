@@ -1,4 +1,5 @@
 import json
+import random
 import pytest
 
 from pathlib import Path
@@ -14,6 +15,7 @@ from app.core.security import get_current_user
 from app.models.book import Book
 from app.models.club import BookClub
 from app.models.user import User, UserRole
+from app.models.user_book import UserBook
 from app.schemas.book import BookCreate
 from app.schemas.club import ClubCreate
 from app.schemas.user import UserRegister, UserUpdate
@@ -48,8 +50,8 @@ def registered_user(test_client):
     response = test_client.post("/auth/register", json=user.model_dump(mode="json"))
 
     if response.status_code == 201:
-        access_token = response.json()["access_token"]
-        yield {"user": user, "access_token": access_token}
+        data = response.json()
+        yield {"user": user, "access_token": data["access_token"], "user_id": data["user_id"]}
 
 @pytest.fixture
 def register_regular_user(test_client):
@@ -63,8 +65,8 @@ def register_regular_user(test_client):
     response = test_client.post("/auth/register", json=user.model_dump(mode="json"))
 
     if response.status_code == 201:
-        access_token = response.json()["access_token"]
-        yield {"user": user, "access_token": access_token}
+        data = response.json()
+        yield {"user": user, "access_token": data["access_token"], "user_id": data["user_id"]}
 
 @pytest.fixture
 def admin_user(test_client, registered_user):
@@ -93,7 +95,7 @@ def books_created(test_client, admin_user):
                 editorial=book_dict["editorial"],
                 genre=book_dict["genre"],
                 isbn=book_dict["isbn"],
-                page_count=book_dict["pages"]
+                page_count=book_dict["page_count"]
             )
             response = test_client.post(
                 "/books/",
@@ -132,3 +134,29 @@ def create_clubs(test_client, admin_user):
     
     yield {"clubs": clubs, "access_token": admin_user["access_token"]}
             
+@pytest.fixture
+def userbooks_created(test_client, registered_user, books_created):
+    books_to_assign = random.sample(books_created, k=3)
+    user_id = registered_user["user_id"]
+    user_books = []
+
+    for book in books_to_assign:
+        userbook = UserBook(
+            user_id=user_id,
+            book_id=book["id"],
+            notes=f"This is the book with id {book["id"]}"
+        )
+
+        response = test_client.post(
+            f"/users/{userbook.user_id}/books/{userbook.book_id}",
+            json=userbook.model_dump(mode="json"),
+            headers={"Authorization": f"Bearer {registered_user["access_token"]}"}
+        )
+
+        if response.status_code != 201:
+            print(f"Unable to create userbook {userbook.user_id}:{userbook.book_id} for testing. Skiped.")
+            continue
+
+        user_books.append(response.json())
+    
+    yield {"user_id": user_id, "userbooks": user_books, "access_token": registered_user["access_token"]}

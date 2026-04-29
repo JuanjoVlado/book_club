@@ -11,4 +11,4 @@ class UserBook(SQLModel, table=True):
     user_rating: float = Field(default=0, ge=0.0, le=1.0)
     notes: str = Field(default="", sa_column=Column(TEXT))
 
-    user: "User" = Relationship()
+    user: "User" = Relationship(back_populates="books")

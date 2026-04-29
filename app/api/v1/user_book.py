@@ -47,8 +47,8 @@ def create_user_book(
     )
     session.add(userbook)
     session.commit()
-
-    return {"message": f"Book with id {book_id} successfully added to user with id {user_id}"}
+    session.refresh(userbook)
+    return userbook
     
 
 @user_book_router.get("/{user_id}/books", tags=["user"], response_model=List[UserBook])
@@ -125,6 +125,13 @@ def delete_user_book(
     
     db_user_book = session.get(UserBook, (user_id, book_id))
     if not db_user_book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Could not find the combination of User with id {user_id} and Book with id {book_id}"
+        )
+    
+    db_book = session.get(Book, book_id)
+    if not db_book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Could not find the combination of User with id {user_id} and Book with id {book_id}"
