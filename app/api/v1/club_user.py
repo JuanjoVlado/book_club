@@ -14,7 +14,7 @@ club_user_router = APIRouter()
 ### CREATE
 @club_user_router.post(
     "/{club_id}/users/{user_id}",
-    tags=["club"],
+    tags=["club-user"],
     status_code=status.HTTP_201_CREATED,
     response_model=ClubUser
 )
@@ -47,7 +47,7 @@ def create_club_user(
 ### GET
 @club_user_router.get(
     "/{club_id}/users",
-    tags=["club"],
+    tags=["club-user"],
     response_model=List[ClubUser]
 )
 def get_club_users(session: SessionDep, club_id: int):
@@ -66,7 +66,7 @@ def get_club_users(session: SessionDep, club_id: int):
 ### GET BY ID
 @club_user_router.get(
     "/{club_id}/users/{user_id}",
-    tags=["club"],
+    tags=["club-user"],
     response_model=ClubUser
 )
 def get_club_user_by_id(session: SessionDep, club_id: int, user_id: int):
@@ -82,7 +82,7 @@ def get_club_user_by_id(session: SessionDep, club_id: int, user_id: int):
 ### UPDATE
 @club_user_router.patch(
     "/{club_id}/users/{user_id}",
-    tags=["club"],
+    tags=["club-user"],
     response_model=ClubUser,
     status_code=status.HTTP_202_ACCEPTED
 )
@@ -114,7 +114,7 @@ def update_club_user(
     return db_club_user
 
 ### DELETE
-@club_user_router.delete("/{club_id}/users/{user_id}", tags=["club"])
+@club_user_router.delete("/{club_id}/users/{user_id}", tags=["club-user"])
 def delete_club_user(
     session: SessionDep,
     club_id: int,

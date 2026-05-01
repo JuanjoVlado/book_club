@@ -12,7 +12,7 @@ from app.schemas.user_book import UserBookUpdate
 
 user_book_router = APIRouter()
 
-@user_book_router.post("/{user_id}/books/{book_id}", tags=["user"], status_code=status.HTTP_201_CREATED)
+@user_book_router.post("/{user_id}/books/{book_id}", tags=["user-book"], status_code=status.HTTP_201_CREATED)
 def create_user_book(
     user_id: int,
     book_id: int,
@@ -51,7 +51,7 @@ def create_user_book(
     return userbook
     
 
-@user_book_router.get("/{user_id}/books", tags=["user"], response_model=List[UserBook])
+@user_book_router.get("/{user_id}/books", tags=["user-book"], response_model=List[UserBook])
 def get_user_books(session: SessionDep, user_id: int):
     db_user = session.get(User, user_id)
 
@@ -65,7 +65,7 @@ def get_user_books(session: SessionDep, user_id: int):
     user_books = session.exec(statement).all()
     return user_books
 
-@user_book_router.get("/{user_id}/books/{book_id}", tags=["user"], response_model=UserBook)
+@user_book_router.get("/{user_id}/books/{book_id}", tags=["user-book"], response_model=UserBook)
 def get_user_book_by_id(user_id: int, book_id: int, session: SessionDep):
     db_user = session.get(User, user_id)
     if not db_user:
@@ -83,7 +83,7 @@ def get_user_book_by_id(user_id: int, book_id: int, session: SessionDep):
     
     return db_user_book
 
-@user_book_router.patch("/{user_id}/books/{book_id}", tags=["user"], response_model=UserBook)
+@user_book_router.patch("/{user_id}/books/{book_id}", tags=["user-book"], response_model=UserBook)
 def update_user_book(
     user_id: int,
     book_id: int,
@@ -110,7 +110,7 @@ def update_user_book(
     session.refresh(db_user_book)
     return db_user_book
 
-@user_book_router.delete("/{user_id}/books/{book_id}", tags=["user"])
+@user_book_router.delete("/{user_id}/books/{book_id}", tags=["user-book"])
 def delete_user_book(
     user_id: int,
     book_id: int,
