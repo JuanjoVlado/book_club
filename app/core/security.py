@@ -75,5 +75,5 @@ def require_club_admin(session: SessionDep, club_id: int, current_user: User = D
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="Club not found"
+        detail=f"Club with id {club_id} not found"
     )
