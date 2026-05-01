@@ -3,7 +3,7 @@ import random
 import pytest
 
 from pathlib import Path
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
 from datetime import date
 from sqlmodel import create_engine, Session, SQLModel, select
@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.core.security import get_current_user
 from app.models.book import Book
 from app.models.club import BookClub
+from app.models.club_user import ClubUser
 from app.models.user import User, UserRole
 from app.models.user_book import UserBook
 from app.schemas.book import BookCreate
@@ -160,3 +161,57 @@ def userbooks_created(test_client, registered_user, books_created):
         user_books.append(response.json())
     
     yield {"user_id": user_id, "userbooks": user_books, "access_token": registered_user["access_token"]}
+
+@pytest.fixture
+def users_created(test_client):
+    users = []
+    with open(test_entities_path, "r") as f:
+        data = json.load(f)
+        for user_dict in data["users"]:
+            user = UserRegister(
+                email=user_dict["email"],
+                name=user_dict["name"],
+                password=user_dict["password"],
+                date_of_birth=user_dict["date_of_birth"],
+            )
+
+            response = test_client.post(
+                f"/auth/register",
+                json=user.model_dump(mode="json")
+            )
+
+            if response.status_code != 201:
+                print(f"Unable to create User u:{user.name} for testing")
+                pytest.fail(reason=response.json()["detail"])
+            
+            users.append(response.json())
+    
+    yield {"users": users}
+
+@pytest.fixture
+def club_user_created(test_client, create_clubs, users_created):
+    club_users = []
+    club = random.choice(create_clubs["clubs"])
+    max_club_id = max(create_clubs["clubs"], key=lambda x: x["id"])["id"]
+    users = users_created["users"]
+    
+    for user in users:
+        response = test_client.post(
+            f"/clubs/{club["id"]}/users/{user["user_id"]}",
+            headers={"Authorization": f"Bearer {create_clubs["access_token"]}"}
+        )
+
+        if response.status_code != 201:
+            print(f"Unable to create ClubUser c:{club["id"]} u:{user["user_id"]} for testing. Skipped.")
+            continue
+        
+        club_users.append(response.json())
+
+    yield {
+        "club_id": club["id"],
+        "clubs": create_clubs["clubs"],
+        "users": users_created["users"],
+        "clubusers": club_users,
+        "access_token": create_clubs["access_token"]
+    }
+

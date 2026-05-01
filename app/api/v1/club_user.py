@@ -69,7 +69,7 @@ def get_club_users(session: SessionDep, club_id: int):
     tags=["club"],
     response_model=ClubUser
 )
-def get_club_user_by(session: SessionDep, club_id: int, user_id: int):
+def get_club_user_by_id(session: SessionDep, club_id: int, user_id: int):
     db_club_user = session.get(ClubUser, (club_id, user_id))
     if not db_club_user:
         raise HTTPException(
