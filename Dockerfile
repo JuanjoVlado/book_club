@@ -9,3 +9,5 @@ RUN pip install uv && uv sync
 COPY . .
 
 EXPOSE 8000
+
+CMD ["entrypoint.sh"]
