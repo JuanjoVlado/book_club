@@ -10,7 +10,7 @@ from sqlmodel import create_engine, Session, SQLModel, select
 
 from app.main import app
 from app.db.session import SessionDep, get_db_session
-from app.core.config import settings
+from app.core.config import TestSettings
 from app.core.security import get_current_user
 from app.models.book import Book
 from app.models.club import BookClub
@@ -21,7 +21,8 @@ from app.schemas.book import BookCreate
 from app.schemas.club import ClubCreate
 from app.schemas.user import UserRegister, UserUpdate
 
-engine = create_engine(settings.dev_db_connection_str)
+test_settings = TestSettings()
+engine = create_engine(test_settings.dev_db_connection_str)
 test_entities_path = Path(__file__).parent / "test_entities_to_create.json"
 
 @pytest.fixture

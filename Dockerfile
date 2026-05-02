@@ -9,3 +9,6 @@ RUN pip install uv && uv sync
 COPY . .
 
 EXPOSE 8000
+
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
