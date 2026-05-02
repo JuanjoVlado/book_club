@@ -215,3 +215,27 @@ def club_user_created(test_client, create_clubs, users_created):
         "access_token": create_clubs["access_token"]
     }
 
+@pytest.fixture
+def club_books_created(test_client, create_clubs, books_created):
+    club_books = []
+    club = random.choice(create_clubs["clubs"])
+
+    for book in books_created:
+        response = test_client.post(
+            f"/clubs/{club["id"]}/books/{book["id"]}",
+            headers={"Authorization": f"Bearer {create_clubs["access_token"]}"}
+        )
+
+        if response.status_code != 201:
+            print(f"Unable to create ClubBook({club["id"]}, {book["id"]}) for testing. Skipped.")
+            continue
+
+        club_books.append(response.json())
+
+    yield {
+        "clubs": create_clubs["clubs"],
+        "club_id": club["id"],
+        "books": books_created,
+        "club_books": club_books,
+        "access_token": create_clubs["access_token"]
+    }

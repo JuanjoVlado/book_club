@@ -5,6 +5,7 @@ from sqlmodel import select
 from app.core.security import require_club_admin
 from app.db.session import SessionDep
 from app.models.book import Book
+from app.models.club import BookClub
 from app.models.club_book import ClubBook
 from app.models.user import User
 from app.schemas.club_book import ClubBookUpdate
@@ -53,6 +54,13 @@ def get_all_club_books(
     session: SessionDep,
     club_id: int
 ):
+    db_club = session.get(BookClub, club_id)
+    if not db_club:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Club with id {club_id} not found"
+        )
+    
     statement = select(ClubBook).where(ClubBook.club_id == club_id)
     club_books = session.exec(statement).all()
     return club_books
@@ -67,6 +75,13 @@ def get_club_book_by_id(
     club_id: int,
     book_id: int,
 ):
+    db_club = session.get(BookClub, club_id)
+    if not db_club:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Club with id {club_id} not found"
+        )
+    
     db_club_book = session.get(ClubBook, (club_id, book_id))
     if not db_club_book:
         raise HTTPException(
