@@ -8,6 +8,8 @@ from app.api.v1.auth import auth_router
 from app.api.v1.books import book_router
 from app.api.v1.club import club_router
 from app.api.v1.user_book import user_book_router
+from app.api.v1.club_user import club_user_router
+from app.api.v1.club_book import club_book_router
 
 app = FastAPI()
 
@@ -15,6 +17,8 @@ app = FastAPI()
 app.include_router(auth_router, prefix="/auth")
 app.include_router(book_router, prefix="/books")
 app.include_router(club_router, prefix="/clubs")
+app.include_router(club_user_router, prefix="/clubs")
+app.include_router(club_book_router, prefix="/clubs")
 app.include_router(user_book_router, prefix="/users")
 
 origins = [

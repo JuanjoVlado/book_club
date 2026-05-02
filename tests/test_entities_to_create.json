@@ -47,25 +47,57 @@
     }
   ],
   "clubs": [
-  {
-    "name": "Fantasía",
-    "description": "Club dedicado a la literatura fantástica y mundos imaginarios."
-  },
-  {
-    "name": "Crimen y Misterio",
-    "description": "Exploramos novelas policiacas, thrillers y narrativas de suspenso."
-  },
-  {
-    "name": "Clásicos Universales",
-    "description": "Lectura y análisis de obras fundamentales de la literatura mundial."
-  },
-  {
-    "name": "Ciencia Ficción",
-    "description": "Club enfocado en distopías, futuros posibles y tecnología en la narrativa."
-  },
-  {
-    "name": "Realismo Latinoamericano",
-    "description": "Autores y obras del realismo y realismo mágico de América Latina."
-  }
-]
+    {
+      "name": "Fantasía",
+      "description": "Club dedicado a la literatura fantástica y mundos imaginarios."
+    },
+    {
+      "name": "Crimen y Misterio",
+      "description": "Exploramos novelas policiacas, thrillers y narrativas de suspenso."
+    },
+    {
+      "name": "Clásicos Universales",
+      "description": "Lectura y análisis de obras fundamentales de la literatura mundial."
+    },
+    {
+      "name": "Ciencia Ficción",
+      "description": "Club enfocado en distopías, futuros posibles y tecnología en la narrativa."
+    },
+    {
+      "name": "Realismo Latinoamericano",
+      "description": "Autores y obras del realismo y realismo mágico de América Latina."
+    }
+  ],
+  "users": [
+    {
+      "email": "carlos.mendez@gmail.com",
+      "password": "Mx!r92kLp",
+      "name": "Carlos Mendez",
+      "date_of_birth": "1990-03-15"
+    },
+    {
+      "email": "sofia.ramirez@hotmail.com",
+      "password": "sR#47wQne",
+      "name": "Sofía Ramírez",
+      "date_of_birth": "1985-11-28"
+    },
+    {
+      "email": "andres.torres@outlook.com",
+      "password": "aT$81vYmz",
+      "name": "Andrés Torres",
+      "date_of_birth": "1998-06-04"
+    },
+    {
+      "email": "lucia.vargas@yahoo.com",
+      "password": "Lv@23nKpx",
+      "name": "Lucía Vargas",
+      "date_of_birth": "1993-09-17"
+    },
+    {
+      "email": "miguel.castillo@gmail.com",
+      "password": "mC!56tRjw",
+      "name": "Miguel Castillo",
+      "date_of_birth": "2001-01-30"
+    }
+  ]
 }
