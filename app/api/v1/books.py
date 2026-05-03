@@ -7,6 +7,7 @@ from app.db.session import SessionDep
 from app.models.user import User, UserRole
 from app.models.book import Book
 from app.schemas.book import BookCreate, BookUpdate
+from app.tasks import get_metadata_by_isbn
 
 book_router = APIRouter()
 
@@ -30,6 +31,9 @@ async def create_book(
     session.add(book)
     session.commit()
     session.refresh(book)
+
+    get_metadata_by_isbn.delay(book.id, book.isbn)
+
     return book
 
 

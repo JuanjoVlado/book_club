@@ -10,6 +10,7 @@ from app.api.v1.club import club_router
 from app.api.v1.user_book import user_book_router
 from app.api.v1.club_user import club_user_router
 from app.api.v1.club_book import club_book_router
+from app.celery_app import app as celery_app
 
 app = FastAPI()
 
