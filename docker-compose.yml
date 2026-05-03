@@ -57,7 +57,7 @@ services:
     build: .
     env_file:
       - .env
-    command: uv run celery -A app worker --loglevel=info
+    command: uv run celery -A app.celery_app worker --loglevel=info
     depends_on:
       db:
         condition: service_healthy

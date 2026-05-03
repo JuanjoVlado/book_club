@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     DB_DBNAME: str | None = None
     DATABASE_URL: str | None = None
 
+    # Celery
+    CELERY_REDIS_URL: str | None = "redis://redis:6379"
+
     @property
     def db_connection_str(self):
         if self.DATABASE_URL:
