@@ -1,12 +1,12 @@
 import requests
-from app.celery_app import app
+from celery import shared_task
 from celery.utils.log import get_task_logger
 
 OPEN_LIBRARY_URL = "https://openlibrary.org/api/books"
 
 logger = get_task_logger(__name__)
 
-@app.task(bind=True)
+@shared_task(bind=True)
 def get_metadata_by_isbn(self, isbn: str):
     try:
         response = requests.get(

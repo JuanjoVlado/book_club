@@ -52,17 +52,23 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   
   celery:
     build: .
     env_file:
       - .env
-    command: uv run celery -A app.celery_app worker --loglevel=info
+    command: uv run celery -A app.celery_app worker --loglevel=debug
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   postgres_data:

@@ -19,6 +19,7 @@ dependencies = [
     "email-validator>=2.3.0",
     "celery[redis]>=5.6.3",
     "requests>=2.33.1",
+    "redis-tools>=0.0.2",
 ]
 
 [project.optional-dependencies]
