@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import List
 from sqlmodel import ARRAY, Column, Field, SQLModel, String
+from pgvector.sqlalchemy import Vector
 
 
 class BookStatus(StrEnum):
@@ -19,6 +20,8 @@ class Book(SQLModel, table=True):
     isbn: str
     genre: List[str] = Field(sa_column=Column(ARRAY(String)))
     rating: float = 0.5
+
+    embedding: List[float] = Field(sa_column=Column(Vector(384)))
 
     created_date: datetime = Field(default_factory=lambda: datetime.now())
     modified_date: datetime = Field(

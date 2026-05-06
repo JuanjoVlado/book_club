@@ -20,6 +20,9 @@ dependencies = [
     "celery[redis]>=5.6.3",
     "requests>=2.33.1",
     "redis-tools>=0.0.2",
+    "pgvector>=0.4.2",
+    "sentence-transformers>=5.4.1",
+    "anthropic>=0.100.0",
 ]
 
 [project.optional-dependencies]

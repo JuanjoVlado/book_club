@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     DB_DBNAME: str | None = None
     DATABASE_URL: str | None = None
 
+    ANTHROPIC_API_KEY: str | None = None
+    HT_TOKEN: str | None = None
+
     # Celery
     CELERY_REDIS_URL: str | None = "redis://redis:6379"
 
