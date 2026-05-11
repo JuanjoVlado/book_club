@@ -1,16 +1,18 @@
 import anthropic
+
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import select
 from app.core.security import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, status
+
 from app.db.session import SessionDep
+from app.core.config import settings
+from app.tasks import create_embedding
 from app.models.book import Book
 from app.models.chat import Chat, ChatMessage, ChatRole
 from app.models.user import User
 from app.schemas.book import BookResponse
 from app.schemas.chat import ChatMessageCreate
-from app.core.config import settings
-from app.tasks import create_embedding, get_model
 
 chat_router = APIRouter()
 
@@ -23,7 +25,7 @@ def get_client():
     return _anthropic_client
 
 @chat_router.post(
-        "/chats",
+        "/",
         tags=["recommendations"],
         status_code=status.HTTP_201_CREATED,
         response_model=Chat
@@ -36,9 +38,8 @@ def create_chat(session: SessionDep, user: User = Depends(get_current_user)):
     return chat
 
 @chat_router.post(
-        "/chats/{chat_id}",
+        "/{chat_id}",
         tags=["recommendations"],
-        status_code=status.HTTP_201_CREATED,
         response_model=List[BookResponse]
     )
 def create_message(
@@ -82,7 +83,6 @@ def create_message(
     )
 
     re_prompt = api_message.content[0].text
-    print("ANTHROPIC PROMPT: ", re_prompt)
 
     assistant_msg = ChatMessage(
         chat_id=chat_id,

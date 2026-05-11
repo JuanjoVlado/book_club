@@ -242,3 +242,19 @@ def club_books_created(test_client, create_clubs, books_created):
         "club_books": club_books,
         "access_token": create_clubs["access_token"]
     }
+
+@pytest.fixture
+def chat_created(test_client, registered_user):
+    user =  registered_user["user"]
+
+    response = test_client.post(
+        "/chats",
+        headers={"Authorization": f"Bearer {registered_user["access_token"]}"}
+    )
+
+    if response.status_code == 201:
+        yield {
+            "user": user,
+            "chat": response.json(),
+            "access_token": registered_user["access_token"]
+        }
