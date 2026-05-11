@@ -61,11 +61,9 @@ def get_metadata_by_isbn(self, book_id: int, isbn: str):
     except RequestException as re:
         logger.warning(f"Request failed. Retrying: {re}")
         self.retry(exc=re, countdown=5, max_retries=3)
-        print("Request Exc: ", re)
 
     except Exception as exc:
         logger.warning(f"Unexpected error: {exc}")
-        print("Other Exceptions: ", exc)
 
 def create_embedding(source_text: str):
     model = get_model()
@@ -90,9 +88,9 @@ def generate_embedding(self, book_id: int, source_text: str | None = None):
             session.add(db_book)
             session.commit()
 
-    except ConnectionError as ce:
-        logger.warning(f"Request failed. Retrying: {ce}")
-        self.retry(exc=ce, countdown=5, max_retries=3)
+    except RequestException as re:
+        logger.warning(f"Request failed. Retrying: {re}")
+        self.retry(exc=re, countdown=5, max_retries=3)
 
-    except Exception as e:
-        logger.error(f"Unexpected error {e}")
+    except Exception as exc:
+        logger.warning(f"Unexpected error: {exc}")

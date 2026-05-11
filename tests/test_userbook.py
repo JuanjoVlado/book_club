@@ -45,7 +45,7 @@ def test_get_userbook_by_id_invalid_user_id(test_client, userbooks_created):
 
 def test_get_userbook_by_id_book_not_found(test_client, userbooks_created):
     user_id = userbooks_created["user_id"]
-    db_userbook = userbooks_created["userbooks"][-1]
+    db_userbook = max(userbooks_created["userbooks"], key=lambda ub: ub["book_id"])
     db_book_id = db_userbook["book_id"]
 
     response = test_client.get(f"/users/{user_id}/books/{db_book_id+1}")

@@ -1,10 +1,12 @@
 import random
 import pytest
-from requests import RequestException
 import requests
 import responses
-from app.tasks import get_metadata_by_isbn
-from celery.exceptions import MaxRetriesExceededError, Retry
+from celery.exceptions import Retry
+from sqlmodel import Session
+from app.models.book import Book
+from app.db.session import engine
+from app.tasks import generate_embedding, get_metadata_by_isbn
 
 
 @responses.activate
@@ -239,7 +241,7 @@ def test_get_isbn_success(test_client, books_created):
     assert data["author"] == "Roald Dahl"
 
 @responses.activate
-def test_get_isbn_connection_error(test_client, books_created):
+def test_get_isbn_connection_error(books_created):
     book = random.choice(books_created["books"])
 
     responses.add(
@@ -252,7 +254,7 @@ def test_get_isbn_connection_error(test_client, books_created):
         get_metadata_by_isbn.apply(args=[book["id"], book["isbn"]])
 
 @responses.activate
-def test_get_isbn_book_not_found(test_client, books_created):
+def test_get_isbn_book_not_found(books_created):
     max_book = max(books_created["books"], key=lambda book: book["id"])
 
     responses.add(
@@ -265,7 +267,7 @@ def test_get_isbn_book_not_found(test_client, books_created):
     assert result.result is None
 
 @responses.activate
-def test_get_isbn_invalid_isbn(test_client, books_created):
+def test_get_isbn_invalid_isbn(books_created):
     book = random.choice(books_created["books"])
     isbn = book["isbn"] + "x_X"
 
@@ -278,3 +280,29 @@ def test_get_isbn_invalid_isbn(test_client, books_created):
 
     result = get_metadata_by_isbn.apply(args=[book["id"], isbn])
     assert result.result is None
+
+def test_generate_embedding_success(books_created):
+    book = random.choice(books_created["books"])
+
+    generate_embedding.apply(args=[book["id"], book["description"]])
+
+    with Session(engine) as session:
+        db_book = session.get(Book, book["id"])
+        assert db_book.embedding is not None
+
+def test_generate_embedding_book_not_found(books_created):
+    max_book = max(books_created["books"], key=lambda book: book["id"])
+
+    result = generate_embedding.apply(args=[max_book["id"]+1, max_book["description"]])
+
+    assert result.result is None
+
+def test_generate_embedding_from_subjects(books_created):
+    book = random.choice(books_created["books"])
+
+    generate_embedding.apply(args=[book["id"]])
+
+    with Session(engine) as session:
+        db_book = session.get(Book, book["id"])
+        assert db_book.embedding is not None
+    
