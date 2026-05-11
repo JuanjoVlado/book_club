@@ -7,6 +7,7 @@ from app.db.session import engine
 from app.models.book import Book
 from app.schemas.book import BookUpdate
 from app.core.config import settings
+from requests.exceptions import RequestException
 
 OPEN_LIBRARY_URL = "https://openlibrary.org/api/books"
 
@@ -56,12 +57,15 @@ def get_metadata_by_isbn(self, book_id: int, isbn: str):
             session.add(db_book)
             session.commit()
             logger.info(f"Book with id {book_id} updated with Open Library data for ISBN:{isbn}")
-    except ConnectionError as ce:
-        logger.warning(f"Request failed. Retrying: {ce}")
-        self.retry(exc=exc, countdown=5, max_retries=3)
+   
+    except RequestException as re:
+        logger.warning(f"Request failed. Retrying: {re}")
+        self.retry(exc=re, countdown=5, max_retries=3)
+        print("Request Exc: ", re)
+
     except Exception as exc:
         logger.warning(f"Unexpected error: {exc}")
-        return
+        print("Other Exceptions: ", exc)
 
 def create_embedding(source_text: str):
     model = get_model()

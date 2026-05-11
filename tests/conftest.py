@@ -1,29 +1,31 @@
 import json
 import random
+from unittest.mock import patch
 import pytest
-
 from pathlib import Path
-from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
 from datetime import date
 from sqlmodel import create_engine, Session, SQLModel, select
-
 from app.main import app
-from app.db.session import SessionDep, get_db_session
+from app.db.session import get_db_session
 from app.core.config import TestSettings
-from app.core.security import get_current_user
-from app.models.book import Book
-from app.models.club import BookClub
-from app.models.club_user import ClubUser
 from app.models.user import User, UserRole
 from app.models.user_book import UserBook
 from app.schemas.book import BookCreate
 from app.schemas.club import ClubCreate
 from app.schemas.user import UserRegister, UserUpdate
 
+
 test_settings = TestSettings()
 engine = create_engine(test_settings.dev_db_connection_str)
 test_entities_path = Path(__file__).parent / "test_entities_to_create.json"
+
+@pytest.fixture(autouse=True, scope="session")
+def mock_celery_tasks():
+    with patch("app.api.v1.books.generate_embedding.delay"), \
+         patch("app.api.v1.books.get_metadata_by_isbn.delay"), \
+         patch("app.api.v1.books.chain"):
+        yield
 
 @pytest.fixture
 def test_client():
@@ -111,7 +113,7 @@ def books_created(test_client, admin_user):
             
             books.append(response.json())
     
-    yield books
+    yield {"books":books, "access_token":admin_user["access_token"]}
 
 @pytest.fixture
 def create_clubs(test_client, admin_user):
@@ -138,7 +140,7 @@ def create_clubs(test_client, admin_user):
             
 @pytest.fixture
 def userbooks_created(test_client, registered_user, books_created):
-    books_to_assign = random.sample(books_created, k=3)
+    books_to_assign = random.sample(books_created["books"], k=3)
     user_id = registered_user["user_id"]
     user_books = []
 
@@ -221,7 +223,7 @@ def club_books_created(test_client, create_clubs, books_created):
     club_books = []
     club = random.choice(create_clubs["clubs"])
 
-    for book in books_created:
+    for book in books_created["books"]:
         response = test_client.post(
             f"/clubs/{club["id"]}/books/{book["id"]}",
             headers={"Authorization": f"Bearer {create_clubs["access_token"]}"}
@@ -236,7 +238,7 @@ def club_books_created(test_client, create_clubs, books_created):
     yield {
         "clubs": create_clubs["clubs"],
         "club_id": club["id"],
-        "books": books_created,
+        "books": books_created["books"],
         "club_books": club_books,
         "access_token": create_clubs["access_token"]
     }

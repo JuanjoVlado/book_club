@@ -3,9 +3,13 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session, create_engine
 
-from app.core.config import settings
+from app.core.config import settings, TestSettings
 
-engine = create_engine(settings.db_connection_str)
+if settings.TESTING:
+    settings = TestSettings()
+    engine = create_engine(settings.dev_db_connection_str)
+else:
+    engine = create_engine(settings.db_connection_str)
 
 def get_db_session() -> Generator[Session, None, None]:
     with Session(engine) as session:

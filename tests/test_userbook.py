@@ -56,7 +56,7 @@ def test_get_userbook_by_id_book_not_found(test_client, userbooks_created):
 ### CREATE
 def test_create_userbook_forbidden_user(test_client, books_created, register_regular_user):
     user = register_regular_user["user_id"]
-    book = random.choice(books_created)
+    book = random.choice(books_created["books"])
 
     response = test_client.post(
         f"/users/{user+1}/books/{book["id"]}",
@@ -68,7 +68,7 @@ def test_create_userbook_forbidden_user(test_client, books_created, register_reg
     assert data["detail"] == "You can only add books to your own user account."
 
 def test_create_userbook_book_not_found(test_client, books_created, register_regular_user):
-    max_book_id = max(books_created, key=lambda x: x["id"])["id"]
+    max_book_id = max(books_created["books"], key=lambda x: x["id"])["id"]
     user_id = register_regular_user["user_id"]
 
     response = test_client.post(
@@ -81,7 +81,7 @@ def test_create_userbook_book_not_found(test_client, books_created, register_reg
     assert data["detail"] == f"Could not find book with id {max_book_id+1}"
 
 def test_create_userbook_duplicated(test_client, books_created, register_regular_user):
-    book_id = random.choice(books_created)["id"]
+    book_id = random.choice(books_created["books"])["id"]
     user_id = register_regular_user["user_id"]
 
     response = test_client.post(
