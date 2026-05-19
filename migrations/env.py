@@ -1,4 +1,6 @@
-from app.models import user, book ,club_book, club_user, club, user_book
+import pgvector
+
+from app.models import user, book ,club_book, club_user, club, user_book, chat
 from sqlmodel import SQLModel
 from app.core.config import settings
 from logging.config import fileConfig
@@ -67,6 +69,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
+        connection.dialect.ischema_names['vector'] = pgvector.sqlalchemy.Vector
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():

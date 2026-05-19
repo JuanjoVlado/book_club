@@ -44,7 +44,7 @@ def test_book_create_missing_fields(test_client, admin_user):
     assert data["detail"][0]["type"] == "missing"
 
 def test_book_create_duplicated_isbn(test_client, books_created, admin_user):
-    dup_book = random.choice(books_created)
+    dup_book = random.choice(books_created["books"])
 
     response = test_client.post(
         "/books/",
@@ -60,10 +60,10 @@ def test_book_get_all_success(test_client, books_created):
     
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == len(books_created)
+    assert len(data) == len(books_created["books"])
 
 def test_book_get_by_id_success(test_client, books_created):
-    book = random.choice(books_created)
+    book = random.choice(books_created["books"])
 
     response = test_client.get(f"/books/{book["id"]}")
     assert response.status_code == 200
@@ -71,13 +71,13 @@ def test_book_get_by_id_success(test_client, books_created):
     assert data["id"] == book["id"]
 
 def test_book_get_by_id_invalid_id(test_client, books_created):
-    max_id_book = max(books_created, key=lambda x: x["id"])
+    max_id_book = max(books_created["books"], key=lambda x: x["id"])
     response = test_client.get(f"/books/{max_id_book["id"] + 1}")
 
     assert response.status_code == 404
     
 def test_book_edit_success(test_client, books_created, admin_user):
-    book_to_update = random.choice(books_created)
+    book_to_update = random.choice(books_created["books"])
     updated_book = BookUpdate(title="Título modificado", author="Autor modificado")
 
     response = test_client.patch(
@@ -93,7 +93,7 @@ def test_book_edit_success(test_client, books_created, admin_user):
     assert data["author"] == updated_book.author
 
 def test_book_delete_success(test_client, books_created, admin_user):
-    book_to_delete = random.choice(books_created)
+    book_to_delete = random.choice(books_created["books"])
 
     response = test_client.delete(
         f"/books/{book_to_delete["id"]}",

@@ -1,13 +1,13 @@
 from typing import List
-
+from celery import chain
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import select
 from app.core.security import get_current_user, require_admin
 from app.db.session import SessionDep
 from app.models.user import User, UserRole
 from app.models.book import Book
-from app.schemas.book import BookCreate, BookUpdate
-from app.tasks import get_metadata_by_isbn
+from app.schemas.book import BookCreate, BookResponse, BookUpdate
+from app.tasks import get_metadata_by_isbn, generate_embedding
 
 book_router = APIRouter()
 
@@ -17,7 +17,6 @@ async def create_book(
     session: SessionDep,
     require_admin: User = Depends(require_admin)
 ):
-    
     statement = select(Book).where(Book.isbn == book_data.isbn)
     db_book = session.exec(statement).first()
 
@@ -32,12 +31,16 @@ async def create_book(
     session.commit()
     session.refresh(book)
 
-    get_metadata_by_isbn.delay(book.id, book.isbn)
+    if book.description:
+        generate_embedding.delay(book.id, book.description)
+        get_metadata_by_isbn.delay(book.id, book.isbn)
+    else:
+        chain(get_metadata_by_isbn.s(book.id, book.isbn) | generate_embedding.si(book.id))()
 
     return book
 
 
-@book_router.get("/", tags=["book"], status_code=status.HTTP_200_OK, response_model=List[Book])
+@book_router.get("/", tags=["book"], status_code=status.HTTP_200_OK, response_model=List[BookResponse])
 async def get_books(
     session: SessionDep,
     skip: int = 0,
@@ -45,9 +48,9 @@ async def get_books(
 ):
     statement = select(Book).offset(skip).limit(limit)
     books = session.exec(statement).all()
-    return books
+    return [BookResponse.model_validate(book) for book in books]
 
-@book_router.get("/{id}", tags=["book"], status_code=status.HTTP_200_OK, response_model=Book)
+@book_router.get("/{id}", tags=["book"], status_code=status.HTTP_200_OK, response_model=BookResponse)
 async def get_book_by_id(
     id: int,
     session: SessionDep
@@ -56,7 +59,7 @@ async def get_book_by_id(
     book = session.exec(statement).first()
 
     if book:
-        return book
+        return BookResponse.model_validate(book)
     
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    TESTING: bool = False
     # JWT
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
@@ -16,6 +17,9 @@ class Settings(BaseSettings):
     DB_PASSWORD: str | None = None
     DB_DBNAME: str | None = None
     DATABASE_URL: str | None = None
+
+    ANTHROPIC_API_KEY: str | None = None
+    HT_TOKEN: str | None = None
 
     # Celery
     CELERY_REDIS_URL: str | None = "redis://redis:6379"

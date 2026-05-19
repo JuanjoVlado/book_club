@@ -20,6 +20,10 @@ dependencies = [
     "celery[redis]>=5.6.3",
     "requests>=2.33.1",
     "redis-tools>=0.0.2",
+    "pgvector>=0.4.2",
+    "sentence-transformers>=5.4.1",
+    "anthropic>=0.100.0",
+    "responses>=0.26.0",
 ]
 
 [project.optional-dependencies]
@@ -49,5 +53,6 @@ omit = ["tests/*", "migrations/*"]
 [dependency-groups]
 dev = [
     "pytest-timeout>=2.4.0",
+    "responses>=0.26.0",
     "ruff>=0.15.11",
 ]
